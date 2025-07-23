@@ -8,3 +8,7 @@ server/dist/
 Thumbs.db
 .vscode/
 .idea/
+role.yaml
+.env
+*/**/.env
+GEMINI.md
