@@ -1,14 +1,182 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ARTIST
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  TRIAL
+  EXPIRED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  role      Role      @default(USER)
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // For soft deletes
+
+  // Relations
+  accounts    Account[]
+  profile     Profile?
+  books       Book[]
+  orders      Order[]
+  subscriptions Subscription[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  provider          String // e.g., "google", "instagram"
+  providerAccountId String // The user's ID from the provider
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Profile {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  name         String?
+  avatarUrl    String?
+  bio          String?
+  instagramUrl String?
+  twitterUrl   String?
+  websiteUrl   String?
+
+  // Shipping Address Details
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  stateProvince String?
+  postalCode   String?
+  country      String?
+  phoneNumber  String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Book {
+  id            String    @id @default(cuid())
+  title         String
+  author        String
+  coverImageUrl String?
+  imagesUrl     String[]  @default([])
+  price         Decimal
+  saleValue     Decimal
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // For soft deletes
+
+  // Relations
+  createdById   String
+  createdBy     User      @relation(fields: [createdById], references: [id])
+  orderItems    OrderItem[]
+
+  @@index([createdById])
+}
+
+model Package {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  price       Decimal
+  maxBooks    Int
+  features    String[]  @default([])
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // For soft deletes
+
+  // Relations
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id          String    @id @default(cuid())
+  userId      String
+  packageId   String
+  startDate   DateTime
+  endDate     DateTime?
+  status      SubscriptionStatus @default(TRIAL)
+  paymentGatewaySubscriptionId String?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // For soft deletes
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+  package     Package   @relation(fields: [packageId], references: [id])
+
+  @@index([userId])
+  @@index([packageId])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  totalAmount Decimal
+  status      OrderStatus @default(PENDING)
+  paymentIntentId String?
+
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime? // For soft deletes
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id])
+  orderItems  OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id            String    @id @default(cuid())
+  orderId       String
+  bookId        String
+  quantity      Int
+  priceAtPurchase Decimal
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  order         Order     @relation(fields: [orderId], references: [id])
+  book          Book      @relation(fields: [bookId], references: [id])
+
+  @@unique([orderId, bookId]) // A book can only appear once per order
+  @@index([orderId])
+  @@index([bookId])
 }
