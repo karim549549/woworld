@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[--color-chic] text-[--color-black] font-sans flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-[--color-chec] text-[--color-black] font-sans flex flex-col items-center justify-center px-4">
       {/* Logo */}
       <div className="mt-12 mb-6">
         <Image
@@ -15,8 +15,8 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <h1 className="text-4xl font-bold text-center text-[--color-primary] mb-4">
-        Welcome to WOWorld Magazine
+      <h1 className="text-4xl font-bold text-center text-[--color-white ] mb-4">
+        Welcome to WOWorld Magazines
       </h1>
       <p className="text-lg text-center max-w-2xl mb-10 text-[--color-accent]">
         Discover the latest in fashion, art, culture, and lifestyle. Explore

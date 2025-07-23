@@ -1,6 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-/* WOWorld Theme Colors & Fonts */
+/* WOWorld custom palette as CSS variables */
 @theme {
   --color-primary: #e02525;
   --color-accent: #0f56d7;
@@ -12,14 +14,13 @@
   --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Light backgrounds only */
 :root {
   --background: var(--color-chic);
   --foreground: var(--color-black);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  background: #f5f5f5; /* or use a Tailwind class in your layout */
+  color: #000;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
 }
