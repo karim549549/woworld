@@ -1,0 +1,11 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello {{ name }},</mj-text>
+        <mj-text>Welcome to Woworld! We're excited to have you on board.</mj-text>
+        <mj-button href="{{ ctaUrl }}">Get Started</mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
