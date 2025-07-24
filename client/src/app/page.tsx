@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[--color-chec] text-[--color-black] font-sans flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-[--color-black] text-[--color-black] font-sans flex flex-col items-center justify-center px-4">
       {/* Logo */}
       <div className="mt-12 mb-6">
         <Image

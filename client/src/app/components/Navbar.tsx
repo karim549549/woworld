@@ -1,154 +1,194 @@
 'use client';
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+const navItems = [
+  { label: "Home", path: "/" },
+  { label: "About", path: "/about" },
+  { label: "News", path: "/news" },
+  { label: "Books", path: "/books" },
+  { label: "WOW Battle", path: "/wow-battle" },
+  { label: "Open-Call", path: "/open-call", pulse: true },
+  { label: "Contact", path: "/contact" },
+];
 
 export default function Navbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
+        setMobileOpen(false);
+      }
+    };
+    if (mobileOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [mobileOpen]);
 
   return (
-    <nav className="w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and Brand */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <Image
-                  src="/wowlogo.svg"
-                  alt="WOWorld Logo"
-                  width={42}
-                  height={42}
-                  priority
-                  className="transition-transform group-hover:scale-105"
-                />
-              </div>
-              <div className="hidden sm:block">
-                <span className="font-black text-2xl text-gray-900 tracking-tight">
-                  WO<span className="text-primary-600">World</span>
-                </span>
-                <div className="text-xs text-gray-500 font-medium tracking-wider uppercase -mt-1">
-                  Magazine
-                </div>
-              </div>
-            </Link>
-          </div>
+    <header className="fixed w-full z-50 transition-all duration-500">
+      {/* Animated background */}
+      <div
+        className={`absolute inset-0 z-[-1] bg-chic origin-top transform transition-transform duration-500 ease-out ${
+          scrolled ? "scale-y-100" : "scale-y-0"
+        }`}
+      ></div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-2">
-            {[
-              { href: "/", label: "Home" },
-              { href: "/about", label: "About" },
-              { href: "/news", label: "News" },
-              { href: "/books", label: "Books" },
-              { href: "/wow-battle", label: "WOW Battle" },
-              { href: "/open-call", label: "Open-Call", pulse: true, featured: true },
-              { href: "/contact", label: "Contact" },
-            ].map(({ href, label, pulse, featured }) => (
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 transition-opacity duration-300"
+          onClick={() => setMobileOpen(false)}
+        ></div>
+      )}
+
+      <div
+        className={`relative flex items-center justify-between w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 transition-all duration-500 ${
+          scrolled ? "top-0 py-2" : "top-4 py-6 sm:py-8 lg:py-2"
+        }`}
+      >
+        {/* Logo */}
+        <div className="w-[60px] sm:w-[72px] md:w-[84px] pt-1.5 pb-1.5 sm:pt-3 sm:pb-3 lg:pt-1 lg:pb-1 transition-all duration-300">
+          <Link href="/">
+            <Image
+              src="/wowlogo.svg"
+              alt="WOWorld Logo"
+              width={72}
+              height={72}
+              priority
+              className="transition-transform hover:scale-105 drop-shadow-xl"
+            />
+          </Link>
+        </div>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex gap-8 font-sans uppercase text-[14px] tracking-wider">
+          {navItems.map(({ label, path, pulse }) => {
+            const isActive = pathname === path;
+            return (
               <Link
-                key={href}
-                href={href}
-                className={`relative px-5 py-2.5 mx-1 text-sm font-semibold transition-all duration-300 rounded-full hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
-                  featured 
-                    ? 'text-white bg-gradient-to-r from-accent to-primary shadow-lg hover:shadow-xl hover:from-accent/90 hover:to-primary/90' 
-                    : 'text-gray-700 hover:text-primary hover:bg-white/80 hover:shadow-md'
-                }`}
+                key={label}
+                href={path}
+                className="relative flex flex-col items-center group"
               >
-                {label}
-                {pulse && (
-                  <div className="absolute -top-1 -right-1">
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                    </span>
-                  </div>
-                )}
+                <span className="absolute top-[-60px] flex justify-center overflow-hidden h-14 w-[12px]">
+                  <span
+                    className={`w-[2px] transition-all duration-300 ${
+                      isActive
+                        ? "bg-primary h-full"
+                        : scrolled
+                        ? "bg-black h-0 group-hover:h-full"
+                        : "bg-white h-0 group-hover:h-full"
+                    }`}
+                  ></span>
+                </span>
+                <span
+                  className={`transition-all duration-300 leading-[1.8] ${
+                    isActive
+                      ? scrolled
+                        ? "text-black font-semibold"
+                        : "text-primary font-semibold"
+                      : scrolled
+                      ? "text-black/70 font-medium group-hover:text-black"
+                      : "text-black/70 font-medium group-hover:text-primary"
+                  }`}
+                >
+                  {label}
+                  {pulse && (
+                    <span className="ml-2 inline-block w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+                  )}
+                </span>
               </Link>
-            ))}
-            
-            {/* CTA Button */}
-            <div className="ml-4 pl-4 border-l border-gray-300/50">
-              <Link 
-                href="/account" 
-                className="inline-flex items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-gray-900 via-gray-800 to-black hover:from-black hover:via-gray-900 hover:to-gray-800 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                My Account
-              </Link>
-            </div>
-          </div>
+            );
+          })}
+        </nav>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-3 rounded-full text-gray-700 hover:text-primary hover:bg-white/80 transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm"
-              aria-expanded={isMobileMenuOpen}
+        {/* Hamburger */}
+        {!mobileOpen && (
+          <button
+            className={`md:hidden z-50 relative p-2 transition-colors duration-500 ${
+              scrolled ? "text-black" : "text-primary"
+            }`}
+            onClick={() => setMobileOpen(true)}
+          >
+            <div
+              className={`flex flex-col justify-center gap-[6px] w-[38px] h-[32px] transition-all duration-300`}
             >
-              <span className="sr-only">Open main menu</span>
-              <div className="relative w-6 h-6">
-                <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'}`}></span>
-                <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-                <span className={`absolute block h-0.5 w-6 bg-current transform transition duration-300 ease-in-out ${isMobileMenuOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'}`}></span>
-              </div>
-            </button>
+              <span className="block w-full h-[2px] bg-current"></span>
+              <span className="block h-[2px] bg-current ml-3 w-[calc(100%-12px)]"></span>
+              <span className="block w-full h-[2px] bg-current"></span>
+            </div>
+          </button>
+        )}
+      </div>
+
+      {/* Mobile Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full sm:w-[85%] max-w-sm bg-chic text-black z-40 origin-right transform transition-transform duration-300 ease-in-out ${
+          mobileOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+        ref={drawerRef}
+      >
+        <div className="flex flex-col justify-between h-full relative">
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="absolute top-4 right-4 z-50"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <div className="flex flex-col justify-center h-full px-6">
+            <nav className="mt-16 font-sans text-lg uppercase tracking-wide font-medium w-full">
+              {navItems.map(({ label, path, pulse }) => {
+                const isActive = pathname === path;
+                return (
+                  <Link
+                    key={label}
+                    href={path}
+                    onClick={() => setMobileOpen(false)}
+                    className={`block px-6 py-4 w-full ${
+                      isActive
+                        ? "text-primary font-semibold relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[20px] before:h-[2px] before:bg-primary"
+                        : "text-black"
+                    }`}
+                  >
+                    {label}
+                    {pulse && (
+                      <span className="ml-2 inline-block w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-200/50 bg-gradient-to-b from-white/95 to-gray-50/95 backdrop-blur-xl shadow-2xl">
-          <div className="px-6 py-8 space-y-3">
-            {[
-              { href: "/", label: "Home" },
-              { href: "/about", label: "About" },
-              { href: "/news", label: "News" },
-              { href: "/books", label: "Books" },
-              { href: "/wow-battle", label: "WOW Battle" },
-              { href: "/open-call", label: "Open-Call", pulse: true, featured: true },
-              { href: "/contact", label: "Contact" },
-            ].map(({ href, label, pulse, featured }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`relative block px-6 py-4 text-lg font-semibold transition-all duration-300 rounded-2xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
-                  featured 
-                    ? 'text-white bg-gradient-to-r from-accent to-primary shadow-lg' 
-                    : 'text-gray-700 hover:text-primary hover:bg-white/80 hover:shadow-md'
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <div className="flex items-center justify-between">
-                  <span>{label}</span>
-                  {pulse && (
-                    <div className="flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))}
-            
-            {/* Mobile CTA */}
-            <div className="pt-6 mt-6 border-t border-gray-200/50">
-              <Link 
-                href="/account" 
-                className="flex items-center justify-center w-full px-6 py-4 text-lg font-bold text-white bg-gradient-to-r from-gray-900 via-gray-800 to-black rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                My Account
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-    </nav>
+    </header>
   );
 }
