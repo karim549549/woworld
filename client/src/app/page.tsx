@@ -12,7 +12,7 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         className="text-6xl md:text-8xl font-extrabold mb-4 tracking-tight"
       >
-Mango world       </motion.div>
+        WOW world       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
