@@ -1,26 +1,125 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Brand Colors */
+  --brand-red: #e02525;         /* Primary accent, warm & confident */
+  --brand-blue: #0f56d7;        /* Secondary accent, chic & trustworthy */
+  --brand-yellow: #ffe066;      /* Highlight, approachable & energetic */
+  --brand-pink: #ff6f91;        /* Friendly, warm, inviting */
+  --brand-dark: #181a20;        /* Deep background, chic */
+  --brand-light: #f7f7fa;       /* Light background, relaxed */
+  --brand-gray: #6c6f7a;        /* Neutral, sophisticated */
+  --brand-muted: #e9e9ef;       /* Muted background, chill */
+  --brand-green: #2ecc40;       /* Empowering, positive accent */
+
+  /* Usage mapping for Tailwind and CSS */
+  --background: var(--brand-light);
+  --foreground: var(--brand-dark);
+  --primary: var(--brand-red);
+  --primary-foreground: #fff;
+  --secondary: var(--brand-blue);
+  --secondary-foreground: #fff;
+  --accent: var(--brand-yellow);
+  --accent-foreground: var(--brand-dark);
+  --muted: var(--brand-muted);
+  --muted-foreground: var(--brand-gray);
+  --destructive: #b91c1c;
+  --border: var(--brand-gray);
+  --input: var(--brand-muted);
+  --ring: var(--brand-blue);
+
+  /* Card/Popover/Sidebar */
+  --card: #fff;
+  --card-foreground: var(--brand-dark);
+  --popover: #fff;
+  --popover-foreground: var(--brand-dark);
+  --sidebar: var(--brand-blue);
+  --sidebar-foreground: #fff;
+  --sidebar-primary: var(--brand-red);
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: var(--brand-yellow);
+  --sidebar-accent-foreground: var(--brand-dark);
+
+  /* Radius */
+  --radius: 0.625rem;
+}
+
+/* Dark mode overrides */
+.dark {
+  --background: var(--brand-dark);
+  --foreground: var(--brand-light);
+  --primary: var(--brand-red);
+  --primary-foreground: #fff;
+  --secondary: var(--brand-blue);
+  --secondary-foreground: #fff;
+  --accent: var(--brand-yellow);
+  --accent-foreground: var(--brand-dark);
+  --muted: #23242a;
+  --muted-foreground: var(--brand-muted);
+  --border: #23242a;
+  --input: #23242a;
+  --ring: var(--brand-yellow);
+
+  --card: #23242a;
+  --card-foreground: var(--brand-light);
+  --popover: #23242a;
+  --popover-foreground: var(--brand-light);
+  --sidebar: var(--brand-dark);
+  --sidebar-foreground: var(--brand-light);
+  --sidebar-primary: var(--brand-red);
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: var(--brand-yellow);
+  --sidebar-accent-foreground: var(--brand-dark);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
 }
