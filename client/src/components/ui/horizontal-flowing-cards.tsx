@@ -32,6 +32,11 @@ const HorizontalFlowingCards: React.FC<HorizontalFlowingCardsProps> = ({
   preloadImages = true
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  // Detect touch device (mobile/tablet)
+  const isTouchDevice = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }, []);
   const [offset, setOffset] = useState<number>(0);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   
@@ -126,11 +131,12 @@ const HorizontalFlowingCards: React.FC<HorizontalFlowingCardsProps> = ({
   }, []);
 
   const handleCardHover = useCallback((index: number, isHovering: boolean): void => {
+    if (isTouchDevice) return; // Disable hover effect on mobile
     if (!isDraggingRef.current) {
       setHoveredIndex(isHovering ? index : null);
       isPausedRef.current = isHovering;
     }
-  }, []);
+  }, [isTouchDevice]);
 
   // Global event listeners with cleanup
   useEffect(() => {
